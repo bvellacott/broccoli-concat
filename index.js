@@ -2,8 +2,8 @@ var Concat = require('./concat');
 var merge = require('lodash.merge');
 
 module.exports = function(inputNode, options) {
-  if (!options || !options.outputFile) {
-    throw new Error('outputFile is required');
+  if (!options || !options.outputDir) {
+    throw new Error('outputDir is required');
   }
 
   var config = merge({
