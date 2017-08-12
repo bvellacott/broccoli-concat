@@ -52,6 +52,7 @@ function Concat(inputNode, options, Strategy) {
   this.footer = options.footer;
   this.footerFiles = options.footerFiles;
   this.separator = (options.separator != null) ? options.separator : '\n';
+  this.transform = options.transform;
 
   ensureNoGlob('headerFiles', this.headerFiles);
   ensureNoGlob('footerFiles', this.footerFiles);
@@ -94,6 +95,7 @@ Concat.prototype._doPatchBasedBuild = function(patch) {
       footerFiles: this.footerFiles,
       footer: this.footer,
       sourceMapConfig: this.sourceMapConfig,
+      transform: this.transform,
     });
   }
 

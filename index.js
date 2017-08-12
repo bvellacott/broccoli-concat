@@ -23,5 +23,5 @@ module.exports = function(inputNode, options) {
   //   }
   // }
 
-  return new Concat(inputNode, options, Strategy || require('./lib/strategies/simple'));
+  return new Concat(inputNode, options, require('./lib/strategies/simple'));
 };
