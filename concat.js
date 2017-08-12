@@ -66,7 +66,12 @@ Concat.prototype.calculatePatch = function() {
   var currentTree = this.getCurrentFSTree();
   var patch = this._lastTree.calculatePatch(currentTree);
 
+  // console.log('_lastTree: ', this._lastTree);
+  // console.log('currentTree: ', currentTree);
+  // console.log('patch: ', patch);
+
   this._lastTree = currentTree;
+  // this._uncgangedTree =
 
   return patch;
 };
@@ -95,6 +100,8 @@ Concat.prototype._doPatchBasedBuild = function(patch) {
     }));
   }
 
+  this.concat.removeAll()
+
   for (var i = 0; i < patch.length; i++) {
     var operation = patch[i];
     var method = operation[0];
@@ -102,13 +109,8 @@ Concat.prototype._doPatchBasedBuild = function(patch) {
 
     switch (method) {
       case 'create':
-        this.concat.addFile(file, this._readFile(file));
-        break;
       case 'change':
-        this.concat.updateFile(file, this._readFile(file));
-        break;
-      case 'unlink':
-        this.concat.removeFile(file);
+        this.concat.addFile(file, this._readFile(file));
         break;
     }
   }
