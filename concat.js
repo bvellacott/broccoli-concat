@@ -41,7 +41,7 @@ function Concat(inputNode, options, Strategy) {
 
   this.Strategy = Strategy;
   this.outputDir = options.outputDir;
-  this.sourceMapConfig = omit(options.sourceMapConfig || {}, 'enabled');
+  this.sourceMapConfig = options.sourceMapConfig || {};
   this.allInputFiles = uniq([].concat(options.headerFiles || [], options.inputFiles || [], options.footerFiles || []));
   this.inputFiles = options.inputFiles;
   this.outputFile = options.outputFile;
@@ -66,12 +66,7 @@ Concat.prototype.calculatePatch = function() {
   var currentTree = this.getCurrentFSTree();
   var patch = this._lastTree.calculatePatch(currentTree);
 
-  // console.log('_lastTree: ', this._lastTree);
-  // console.log('currentTree: ', currentTree);
-  // console.log('patch: ', patch);
-
   this._lastTree = currentTree;
-  // this._uncgangedTree =
 
   return patch;
 };
@@ -91,16 +86,18 @@ Concat.prototype.build = function() {
 
 Concat.prototype._doPatchBasedBuild = function(patch) {
   if (!this.concat) {
-    this.concat = new this.Strategy(merge(this.sourceMapConfig, {
+    this.concat = new this.Strategy({
+      outputPath: this.outputPath,
       separator: this.separator,
       header: this.header,
       headerFiles: this.headerFiles,
       footerFiles: this.footerFiles,
-      footer: this.footer
-    }));
+      footer: this.footer,
+      sourceMapConfig: this.sourceMapConfig,
+    });
   }
 
-  this.concat.removeAll()
+  this.concat.setAllUnchanged()
 
   for (var i = 0; i < patch.length; i++) {
     var operation = patch[i];
@@ -112,24 +109,13 @@ Concat.prototype._doPatchBasedBuild = function(patch) {
       case 'change':
         this.concat.addFile(file, this._readFile(file));
         break;
+      case 'unlink':
+        this.concat.removeFile(file)
+        break;
     }
   }
 
-  var content = this.concat.result();
-
-  // If content is undefined, then we the concat had no input files
-  if (content === undefined) {
-    if (!this.allowNone) {
-      throw new Error('Concat: nothing matched [' + this.inputFiles + ']');
-    } else {
-      content = [];
-    }
-  }
-
-  var outputDir = this.outputDir
-  content.forEach(function(fileEntry) {
-    fs.outputFileSync(path.join(outputDir, fileEntry.file), fileEntry.content);
-  })
+  this.concat.write();
 };
 
 Concat.prototype._readFile = function(file) {

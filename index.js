@@ -12,16 +12,16 @@ module.exports = function(inputNode, options) {
 
   var Strategy;
 
-  if (config.enabled) {
-    var extensions = (config.extensions || ['js']);
-    for (var i=0; i < extensions.length; i++) {
-      var ext = '.' + extensions[i].replace(/^\./,'');
-      if (options.outputFile.slice(-1 * ext.length) === ext) {
-        Strategy = require('fast-sourcemap-concat');
-        break;
-      }
-    }
-  }
+  // if (config.enabled) {
+  //   var extensions = (config.extensions || ['js']);
+  //   for (var i=0; i < extensions.length; i++) {
+  //     var ext = '.' + extensions[i].replace(/^\./,'');
+  //     if (options.outputFile.slice(-1 * ext.length) === ext) {
+  //       Strategy = require('fast-sourcemap-concat');
+  //       break;
+  //     }
+  //   }
+  // }
 
   return new Concat(inputNode, options, Strategy || require('./lib/strategies/simple'));
 };
