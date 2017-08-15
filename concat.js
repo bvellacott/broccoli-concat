@@ -53,6 +53,7 @@ function Concat(inputNode, options, Strategy) {
   this.footerFiles = options.footerFiles;
   this.separator = (options.separator != null) ? options.separator : '\n';
   this.transform = options.transform;
+  this.exclude = options.exclude
 
   ensureNoGlob('headerFiles', this.headerFiles);
   ensureNoGlob('footerFiles', this.footerFiles);
@@ -129,10 +130,8 @@ Concat.prototype.getCurrentFSTree = function() {
 };
 
 Concat.prototype.listEntries = function() {
-  // If we have no inputFiles at all, use undefined as the filter to return
-  // all files in the inputDir.
-  var filter = this.allInputFiles.length ? this.allInputFiles : undefined;
+  var globs = this.allInputFiles.length ? this.allInputFiles : [ '**/*' ];
   var inputDir = this.inputPaths[0];
-  return walkSync.entries(inputDir, filter);
+  return walkSync.entries(inputDir, { globs: globs, ignore: this.exclude });
 };
 
